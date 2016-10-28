@@ -2,29 +2,41 @@
 var express = require('express'),
     app = express(),
     server = require('http').createServer(app),
-    io = require('socket.io')(server);
+    io = require('socket.io')();
 
+io.attach(server);
 app.set('views', '../views/');
 app.set('view engine', 'jade');
 app.use(express.static('../public/'));
 app.use('/frontend_libs', express.static('../node_modules/'));
 
-app.get('/', function (req, res, next){
+app.get('/', function (req, res, next) {
     res.render('chat');
 });
 
-io.on('connection', function (client){
-    console.log('a user connected');
-    client.on('login', function (data){
+// io.use(function (socket, next){
+//     if (socket.request.headers.cookie) {
+//         console.log(socket.request.headers);
+//         return next();
+//     }
+//     next(new Error('Authentication Failed'));
+// });
 
+io.on('connection', function (socket) {
+    socket.emit('enter', socket.id + ' just enters this conversation');
+
+    // console.log(socket.nsp.name);
+
+    socket.on('message', function (msg) {
+        socket.emit('message', msg);
     });
 
-    client.on('message', function (msg){
-        console.log('message from client: ' + msg);
-    });
-    
-    client.on('disconnect', function (){
+    socket.on('disconnect', function () {
         console.log('user has been disconnected');
+    });
+
+    socket.on('input', function (){
+        console.log('user is inputing');
     });
 });
 
