@@ -11,7 +11,7 @@ app.use(express.static('../public/'));
 app.use('/frontend_libs', express.static('../node_modules/'));
 
 app.get('/', function (req, res, next) {
-    res.render('chat');
+    res.render('chat', {title: 'chit-chat'});
 });
 
 // io.use(function (socket, next){
