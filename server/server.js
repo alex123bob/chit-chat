@@ -10,7 +10,7 @@ app.set('view engine', 'jade');
 app.use(express.static('../public/'));
 app.use('/frontend_libs', express.static('../node_modules/'));
 
-app.get('/', function (req, res, next) {
+app.get('/:roomId', function (req, res, next) {
     res.render('chat', {title: 'chit-chat'});
 });
 
@@ -22,21 +22,50 @@ app.get('/', function (req, res, next) {
 //     next(new Error('Authentication Failed'));
 // });
 
+var rooms = {};
+
 io.on('connection', function (socket) {
-    socket.emit('enter', socket.id + ' just enters this conversation');
+    var url = socket.request.headers.referer; // get url from client request.
+    url = url.split('/');
+    var roomId = url[url.length - 1],
+        user = '';
 
-    // console.log(socket.nsp.name);
+    socket.on('join', function (userName){
+        user = userName;
+        if (!rooms[roomId]) {
+            rooms[roomId] = [];
+        }
+        rooms[roomId].push(userName);
+        socket.join(roomId);
+        io.to(roomId).emit('msg', userName + ' just joins the room ' + roomId);
+    });
 
+    // internal event
     socket.on('message', function (msg) {
-        socket.emit('message', msg);
+        // in this way, only others in the room(id is roomId) can accept this msg and exclude the sender itself.
+        // socket.broadcast.to(roomId).emit('msg', msg);
+
+        // in this way, we can send current msg to all users in the specific room with roomId.
+        io.to(roomId).emit('msg', msg);
+    });
+
+    socket.on('quit', function (){
+        socket.emit('disconnect');
     });
 
     socket.on('disconnect', function () {
-        console.log('user has been disconnected');
+        var index = rooms[roomId].indexOf(user);
+        if (-1 !== index) {
+            rooms[roomId].splice(index, 1);
+        }
+        // leaves room.
+        socket.leave(roomId);
+        io.to(roomId).emit('message', user + ' leaves room "' + roomId + '".');
+        console.log(user + ' leaves room "' + roomId + '".');
     });
 
     socket.on('input', function (){
-        console.log('user is inputing');
+        // console.log('user is inputing');
     });
 });
 
