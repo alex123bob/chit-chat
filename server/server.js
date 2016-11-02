@@ -68,7 +68,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('input', function (inputVal){
-        socket.broadcast.to(roomId).emit('msg', user + ' is inputing...');
+        socket.broadcast.to(roomId).emit('input', user + ' is inputing...');
     });
 });
 

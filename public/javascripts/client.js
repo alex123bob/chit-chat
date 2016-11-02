@@ -51,8 +51,25 @@ $(function () {
             $('#messages').append($('<li>').text(msg));
         });
 
-        // socket.on('enter', function (msg) {
-        //     $('#messages').append($('<li>').text(msg));
-        // });
+        var clearTimer = function (ids){
+            if ($.isArray(ids)) {
+                ids.forEach(function (id, index, self){
+                    clearTimeout(id);
+                });
+            }
+            return [];
+        }
+
+        socket.on('input', function (msg){
+            var $hint = $('.hint');
+            $hint.text(msg);
+            $hint.data('ids', clearTimer($hint.data('ids')));
+            
+            var timerId = setTimeout(function (){
+                $hint.text('');
+            }, 1000);
+
+            $hint.data('ids').push(timerId);
+        });
     }
 });
