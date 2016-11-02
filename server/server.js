@@ -14,14 +14,6 @@ app.get('/:roomId', function (req, res, next) {
     res.render('chat', {title: 'chit-chat'});
 });
 
-// io.use(function (socket, next){
-//     if (socket.request.headers.cookie) {
-//         console.log(socket.request.headers);
-//         return next();
-//     }
-//     next(new Error('Authentication Failed'));
-// });
-
 var rooms = {};
 
 io.on('connection', function (socket) {
@@ -40,10 +32,14 @@ io.on('connection', function (socket) {
         io.to(roomId).emit('msg', userName + ' just joins the room ' + roomId);
     });
 
+    // check if current user is still in the chatting room or not.
+    function online (){
+        return rooms[roomId].indexOf(user) !== -1;
+    }
+
     // internal event
     socket.on('message', function (msg) {
-        // if current user is not in the specific room, we won't send any msg
-        if (rooms[roomId].indexOf(user) === -1) {
+        if (!online()) {
             return false;
         }
         // if so, only others in the room(id is roomId) can accept this msg and exclude the sender itself.
@@ -54,6 +50,9 @@ io.on('connection', function (socket) {
     });
 
     socket.on('quit', function (){
+        if (!online()) {
+            return false;
+        }
         socket.emit('disconnect');
     });
 
@@ -68,6 +67,10 @@ io.on('connection', function (socket) {
     });
 
     socket.on('input', function (inputVal){
+        // if user is not online, we are not gonna send input event to any other user.
+        if (!online()) {
+            return false;
+        }
         socket.broadcast.to(roomId).emit('input', user + ' is inputing...');
     });
 });

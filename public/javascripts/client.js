@@ -13,7 +13,11 @@ $(function () {
 
         // this is used to emit message event to server side.
         var sendMsg = function () {
-            socket.emit('message', $('#m').val());
+            var val = $('#m').val();
+            if (!val.trim()) {
+                return false;
+            }
+            socket.emit('message', val);
             $('#m').val('');
         }
 
@@ -39,7 +43,11 @@ $(function () {
         });
 
         $('#m').on('keydown', function (ev) {
-            socket.emit('input', $('#m').val());
+            var inputVal = $('#m').val();
+            // we don't regard ENTER as the source of input event.
+            if (ev.keyCode !== 13) {
+                socket.emit('input', inputVal);
+            }
         });
 
         // internal event
@@ -48,7 +56,7 @@ $(function () {
         });
 
         socket.on('msg', function (msg) {
-            $('#messages').append($('<li>').text(msg));
+            $('#messages').append($('<li>').html(msg.replace(/\s/gi, '&nbsp;')));
         });
 
         var clearTimer = function (ids){
@@ -62,11 +70,11 @@ $(function () {
 
         socket.on('input', function (msg){
             var $hint = $('.hint');
-            $hint.text(msg);
+            $hint.html(msg);
             $hint.data('ids', clearTimer($hint.data('ids')));
             
             var timerId = setTimeout(function (){
-                $hint.text('');
+                $hint.html('');
             }, 1000);
 
             $hint.data('ids').push(timerId);
