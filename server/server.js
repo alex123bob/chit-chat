@@ -42,11 +42,15 @@ io.on('connection', function (socket) {
 
     // internal event
     socket.on('message', function (msg) {
-        // in this way, only others in the room(id is roomId) can accept this msg and exclude the sender itself.
+        // if current user is not in the specific room, we won't send any msg
+        if (rooms[roomId].indexOf(user) === -1) {
+            return false;
+        }
+        // if so, only others in the room(id is roomId) can accept this msg and exclude the sender itself.
         // socket.broadcast.to(roomId).emit('msg', msg);
 
         // in this way, we can send current msg to all users in the specific room with roomId.
-        io.to(roomId).emit('msg', msg);
+        io.to(roomId).emit('msg', user + ': ' + msg);
     });
 
     socket.on('quit', function (){
@@ -60,12 +64,11 @@ io.on('connection', function (socket) {
         }
         // leaves room.
         socket.leave(roomId);
-        io.to(roomId).emit('message', user + ' leaves room "' + roomId + '".');
-        console.log(user + ' leaves room "' + roomId + '".');
+        io.to(roomId).emit('msg', user + ' leaves room "' + roomId + '".');
     });
 
-    socket.on('input', function (){
-        // console.log('user is inputing');
+    socket.on('input', function (inputVal){
+        socket.broadcast.to(roomId).emit('msg', user + ' is inputing...');
     });
 });
 

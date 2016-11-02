@@ -1,9 +1,10 @@
 'use strict';
 
 $(function () {
-    var name = prompt('Please enter your nick name in the chat room:😄');
+    var name = prompt('Please enter your nick name in the chat room:😄'),
+        flag = !! name;
     
-    if ('' == name) {
+    if (!flag) {
         alert('we must input something.');
     }
     else {
@@ -50,8 +51,8 @@ $(function () {
             $('#messages').append($('<li>').text(msg));
         });
 
-        socket.on('enter', function (msg) {
-            $('#messages').append($('<li>').text(msg));
-        });
+        // socket.on('enter', function (msg) {
+        //     $('#messages').append($('<li>').text(msg));
+        // });
     }
 });
