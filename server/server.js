@@ -29,8 +29,12 @@ io.on('connection', function (socket) {
         }
         rooms[roomId].push(userName);
         socket.join(roomId);
-        io.to(roomId).emit('msg', userName + ' just joins the room ' + roomId);
+        io.to(roomId).emit('msg', bold(userName) + ' just joins the room ' + roomId);
     });
+
+    function bold (el){
+        return '<strong>' + el + '</strong>';
+    }
 
     // check if current user is still in the chatting room or not.
     function online (){
@@ -46,7 +50,7 @@ io.on('connection', function (socket) {
         // socket.broadcast.to(roomId).emit('msg', msg);
 
         // in this way, we can send current msg to all users in the specific room with roomId.
-        io.to(roomId).emit('msg', user + ': ' + msg);
+        io.to(roomId).emit('msg', bold(user) + ': ' + msg);
     });
 
     socket.on('quit', function (){
@@ -72,7 +76,7 @@ io.on('connection', function (socket) {
         if (!online()) {
             return false;
         }
-        socket.broadcast.to(roomId).emit('input', user + ' is inputing...');
+        socket.broadcast.to(roomId).emit('input', bold(user) + ' is inputing...');
     });
 });
 
