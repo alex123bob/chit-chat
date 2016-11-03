@@ -57,6 +57,9 @@ $(function () {
 
         socket.on('msg', function (msg) {
             $('#messages').append($('<li>').html(msg.replace(/\s/gi, '&nbsp;')));
+            $('body').animate({
+                scrollTop: $('ul li:last').offset().top
+            }, 0);
         });
 
         var clearTimer = function (ids){
