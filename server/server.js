@@ -56,6 +56,7 @@ io.on('connection', function (socket) {
         socket.emit('disconnect');
     });
 
+    // internal event
     socket.on('disconnect', function () {
         var index = rooms[roomId].indexOf(user);
         if (-1 !== index) {
