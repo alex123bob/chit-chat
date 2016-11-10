@@ -46,7 +46,7 @@ io.on('connection', function (socket) {
         if (!online()) {
             return false;
         }
-        // if so, only others in the room(id is roomId) can accept this msg and exclude the sender itself.
+        // if so, others in the room(id is roomId) can accept this msg except the sender itself.
         // socket.broadcast.to(roomId).emit('msg', msg);
 
         // in this way, we can send current msg to all users in the specific room with roomId.
