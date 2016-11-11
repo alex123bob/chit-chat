@@ -7,18 +7,23 @@ let players = {},
     sockets = {},
     status = {};
 
-exports.setupSocket = function(server) {
+exports.setupSocket = (server) => {
     io.attach(server, {
         'log level': 0
     });
     
-    io.on('connection', function(socket) {
-        socket.on('userMessage', function(data) {
+    io.on('connection', (socket) => {
+        socket.on('userMessage', (data) => {
             socket.emit('userMessage', data);
             socket.broadcast.emit('userMessage', data);
         });
 
-        socket.on('userLogin', function(data) {
+        // user connects to server
+        socket.on('join', (obj) => {
+            console.log(obj.userName + ' connects to this server, his nickname is ' + obj.nickName);
+        });
+
+        socket.on('userLogin', (data) => {
             socket.emit('usersInit', players);
             players[data.username] = data;
             status[data.username] = 'normal';
@@ -30,24 +35,29 @@ exports.setupSocket = function(server) {
             io.emit('userLogin', data);
         });
 
-        socket.on('userUpdate', function(data) {
+        socket.on('userUpdate', (data) => {
             players[data.username] = data;
             io.emit('userUpdate', data);
         });
-        socket.on('userLogout', function(data) {
+
+        socket.on('userLogout', (data) => {
             console.log('user: ' + data.nickname + ' has left.');
             socket.emit('userLogout', data);
             socket.broadcast.emit('userLogout', data);
         });
-        socket.on('connect', function(data) {
-            console.log('user: ' + data.nickname + ' connected.');
+
+        // emit disconnect to notify socket server that someone has been disconnected.
+        socket.on('quit', (data) => {
+            socket.emit('disconnect', data);
         });
-        socket.on('disconnect', function(data) {
+
+        socket.on('disconnect', (data) => {
             console.log(data);
         });
-        socket.on('sendChallenge', function(data) {
-            var sender = players[data.sender.username];
-            var receiver = players[data.receiver.username];
+
+        socket.on('sendChallenge', (data) => {
+            let sender = players[data.sender.username],
+                receiver = players[data.receiver.username];
             if (status[data.receiver.username] == 'challenge') {
                 socket.emit('challengeNotAvailable', receiver);
             } 
