@@ -18,13 +18,7 @@ exports.setupSocket = (server) => {
             socket.broadcast.emit('userMessage', data);
         });
 
-        // user connects to server
-        socket.on('join', (obj) => {
-            console.log(obj.userName + ' connects to this server, his nickname is ' + obj.nickName);
-        });
-
         socket.on('userLogin', (data) => {
-            socket.emit('usersInit', players);
             players[data.username] = data;
             status[data.username] = 'normal';
             userInfoBySocketId[socket.id] = {
@@ -32,12 +26,13 @@ exports.setupSocket = (server) => {
                 nickname: data.nickname
             };
             sockets[data.username] = socket;
-            io.emit('userLogin', data);
+            io.emit('userLogin', players);
+            console.log(players);
         });
 
         socket.on('userUpdate', (data) => {
-            players[data.username] = data;
-            io.emit('userUpdate', data);
+            players[data.username].coor = data.coor;
+            io.emit('userUpdate', players);
         });
 
         socket.on('userLogout', (data) => {
@@ -52,7 +47,7 @@ exports.setupSocket = (server) => {
         });
 
         socket.on('disconnect', (data) => {
-            console.log(data);
+            console.log('disconnect: ' + data);
         });
 
         socket.on('sendChallenge', (data) => {
