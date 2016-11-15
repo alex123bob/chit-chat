@@ -36,31 +36,33 @@
 
             function monitorCurEl ($el, socket, username){
                 if ($el && $el.hasClass('current')) {
-                    $(window).on('keypress', function (ev){
+                    var step = 7,
+                        interval = 100;
+                    $(window).on('keydown', function (ev){
                         switch(ev.keyCode) {
                             // up
-                            case 119:
+                            case 38:
                             $el.animate({
-                                top: '-=1px'
-                            }, 0);
+                                top: '-=' + step + 'px'
+                            }, interval);
                             break;
                             // left
-                            case 97:
+                            case 37:
                             $el.animate({
-                                left: '-=1px'
-                            }, 0);
+                                left: '-=' + step + 'px'
+                            }, interval);
                             break;
                             // down
-                            case 115:
+                            case 40:
                             $el.animate({
-                                top: '+=1px'
-                            }, 0);
+                                top: '+=' + step + 'px'
+                            }, interval);
                             break;
                             // right
-                            case 100:
+                            case 39:
                             $el.animate({
-                                left: '+=1px'
-                            }, 0);
+                                left: '+=' + step + 'px'
+                            }, interval);
                             break;
                             default:
                             break;
