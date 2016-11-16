@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Let's Rock N Roll</title>
+    <link rel="stylesheet" href="css.css">
 </head>
 <body>
     <script src="../node_modules/jquery/dist/jquery.js" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
     <script type="text/javascript" src="../public/javascripts/socket.io-1.4.5.js"></script>
     <script>
         $(function (){
             var arr = prompt('Please enter your name and nickname in the chat room, colon would be the separator: 😃'),
                 flag,
-                $block = $('<div style="position:absolute; width: 10px; height: 10px;"></div>'),
+                $block = $('<div style="position:absolute; width: 18px; height: 18px;"></div>'),
                 userId = Date.now();
             arr = arr.split(':');
             flag = (arr.length === 2);
@@ -36,33 +38,33 @@
 
             function monitorCurEl ($el, socket, username){
                 if ($el && $el.hasClass('current')) {
-                    var step = 7,
+                    var step = 30,
                         interval = 100;
                     $(window).on('keydown', function (ev){
                         switch(ev.keyCode) {
                             // up
                             case 38:
-                            $el.animate({
+                            $el.velocity({
                                 top: '-=' + step + 'px'
-                            }, interval);
+                            }, {duration: interval});
                             break;
                             // left
                             case 37:
-                            $el.animate({
+                            $el.velocity({
                                 left: '-=' + step + 'px'
-                            }, interval);
+                            }, {duration: interval});
                             break;
                             // down
                             case 40:
-                            $el.animate({
+                            $el.velocity({
                                 top: '+=' + step + 'px'
-                            }, interval);
+                            }, {duration: interval});
                             break;
                             // right
                             case 39:
-                            $el.animate({
+                            $el.velocity({
                                 left: '+=' + step + 'px'
-                            }, interval);
+                            }, {duration: interval});
                             break;
                             default:
                             break;

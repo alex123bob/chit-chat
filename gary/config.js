@@ -31,7 +31,9 @@ exports.setupSocket = (server) => {
         });
 
         socket.on('userUpdate', (data) => {
-            players[data.username].coor = data.coor;
+            if (data) {
+                players[data.username].coor = data.coor;
+            }
             io.emit('userUpdate', players);
         });
 
@@ -41,13 +43,11 @@ exports.setupSocket = (server) => {
             socket.broadcast.emit('userLogout', data);
         });
 
-        // emit disconnect to notify socket server that someone has been disconnected.
-        socket.on('quit', (data) => {
-            socket.emit('disconnect', data);
-        });
-
         socket.on('disconnect', (data) => {
-            console.log('disconnect: ' + data);
+            let userInfo = userInfoBySocketId[socket.id];
+            delete players[userInfo.username];
+            delete status[userInfo.username];
+            delete sockets[userInfo.username];
         });
 
         socket.on('sendChallenge', (data) => {
