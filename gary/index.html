@@ -38,7 +38,7 @@
 
             function monitorCurEl ($el, socket, username){
                 if ($el && $el.hasClass('current')) {
-                    var step = 30,
+                    var step = 4,
                         interval = 100;
                     $(window).on('keydown', function (ev){
                         switch(ev.keyCode) {
@@ -137,7 +137,7 @@
                     for (var pro in playerList) {
                         var player = playerList[pro];
                         if (player.id != userId) {
-                            $('[userId="' + player.id + '"]').animate(player.coor, 0);
+                            $('[userId="' + player.id + '"]').velocity(player.coor, 0);
                         }
                     }
                 });
