@@ -7,7 +7,7 @@
 </head>
 <body>
     <script src="../node_modules/jquery/dist/jquery.js" type="text/javascript"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+    <script src="./velocity.min.js"></script>
     <script type="text/javascript" src="../public/javascripts/socket.io-1.4.5.js"></script>
     <script>
         $(function (){
@@ -97,6 +97,9 @@
                 socket.on('userLogin', function (playerList){
                     for (var pro in playerList) {
                         var player = playerList[pro];
+                        if (player.isdeleted) {
+                            continue;
+                        }
                         // current user itself
                         if (player.id == userId) {
                             if ($('.current').length == 0) {
@@ -137,7 +140,12 @@
                     for (var pro in playerList) {
                         var player = playerList[pro];
                         if (player.id != userId) {
-                            $('[userId="' + player.id + '"]').velocity(player.coor, 0);
+                            if (player.isdeleted) {
+                                $('[userId="' + player.id + '"]').remove();
+                            }
+                            else {
+                                $('[userId="' + player.id + '"]').velocity(player.coor, {duration: 100});
+                            }
                         }
                     }
                 });
