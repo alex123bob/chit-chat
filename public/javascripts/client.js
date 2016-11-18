@@ -2,8 +2,8 @@
 
 $(function () {
     var name = prompt('Please enter your nick name in the chat room:😄'),
-        flag = !! name;
-    
+        flag = !!name;
+
     if (!flag) {
         alert('we must input something.');
     }
@@ -22,8 +22,14 @@ $(function () {
         }
 
         // emit quit to server side
+        // meanwhile we'are gonna redirect to the homepage site.
         var quit = function () {
-            socket.emit('quit');
+            var cfm = window.confirm('You sure you wanna quit ? ');
+            if (cfm === true) {
+                socket.emit('quit');
+                var homepage = location.protocol + '//' + location.host;
+                location.href = homepage;
+            }
         }
 
         $('form').on('submit', function (ev) {
@@ -41,6 +47,9 @@ $(function () {
                 quit();
             }
         });
+
+        // once the page loaded, we'd better focus cursor into input field
+        $('#m').focus();
 
         $('#m').on('keydown', function (ev) {
             var inputVal = $('#m').val();
@@ -62,21 +71,21 @@ $(function () {
             }, 0);
         });
 
-        var clearTimer = function (ids){
+        var clearTimer = function (ids) {
             if ($.isArray(ids)) {
-                ids.forEach(function (id, index, self){
+                ids.forEach(function (id, index, self) {
                     clearTimeout(id);
                 });
             }
             return [];
         }
 
-        socket.on('input', function (msg){
+        socket.on('input', function (msg) {
             var $hint = $('.hint');
             $hint.html(msg);
             $hint.data('ids', clearTimer($hint.data('ids')));
-            
-            var timerId = setTimeout(function (){
+
+            var timerId = setTimeout(function () {
                 $hint.html('');
             }, 1000);
 
