@@ -6,3 +6,15 @@ body {
 a {
   color: #00B7FF;
 }
+
+.room {
+  width: 100px;
+  font-size: 18px;
+  text-align: center;
+  padding: 41px 0;
+  cursor: pointer;
+  background: lightblue;
+  display: inline-block;
+  margin: 8px 10px 0 0;
+  border-radius: 8px;
+}
