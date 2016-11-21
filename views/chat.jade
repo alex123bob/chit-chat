@@ -1,10 +1,12 @@
 extends layout
 
 block head
+    link(rel="shortcut icon" type="image/png" href="/images/chit-chat.png")
     link(rel='stylesheet' href='/stylesheets/chat.css')
     link(rel='stylesheet' href='/stylesheets/collapsible.css')
     script(src="/javascripts/libs/socket.io-1.4.5.js")
     script(src="/node_modules/jquery/dist/jquery.js")
+    script(src="/node_modules/favico.js/favico-0.3.10.min.js")
     script(src="/javascripts/libs/jquery.collapsible.js")
     script(src="/javascripts/client.js")
 
@@ -13,8 +15,6 @@ block content
         div(id="online_users" class="collapse-container")
             h1 Online Users
             div
-                p online list
-                p online list1
     ul(id="messages")
     p(class="hint")
     form(action="")

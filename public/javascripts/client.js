@@ -2,12 +2,80 @@
 
 $(function () {
     var name = prompt('Please enter your nick name in the chat room:😄'),
-        flag = !!name;
+        flag = !!name,
+        favicon= new Favico({
+            position: 'up'
+        }),
+        badgeCount = 0,
+        windowActivated = false;
+
+    function windowFocusAndBlur(focus, blur) {
+        // check if browser window has focus		
+        var notIE = (document.documentMode === undefined),
+            isChromium = window.chrome;
+            
+        if (notIE && !isChromium) {
+
+            // checks for Firefox and other  NON IE Chrome versions
+            $(window).on("focusin", function () { 
+
+                // tween resume() code goes here
+                setTimeout(function(){            
+                    focus();
+                },300);
+
+            }).on("focusout", function () {
+                blur();
+            });
+
+        } else {
+            
+            // checks for IE and Chromium versions
+            if (window.addEventListener) {
+                // bind focus event
+                window.addEventListener("focus", function (event) {
+                    // tween resume() code goes here
+                    setTimeout(function(){                 
+                        focus();
+                    },300);
+                }, false);
+
+                // bind blur event
+                window.addEventListener("blur", function (event) {
+                    blur();
+                }, false);
+
+            } else {
+
+                // bind focus event
+                window.attachEvent("focus", function (event) {
+
+                    // tween resume() code goes here
+                    setTimeout(function(){                 
+                        focus();
+                    },300);
+
+                });
+
+                // bind focus event
+                window.attachEvent("blur", function (event) {
+                    blur();
+                });
+            }
+        }
+    }
 
     if (!flag) {
         alert('we must input something.');
     }
     else {
+        windowFocusAndBlur(function (){
+            windowActivated = true;
+            badgeCount = 0;
+            favicon.reset();
+        }, function (){
+            windowActivated = false;
+        });
         $('#online_users').collapsible('accordion-open', {
             contentOpen: 3,
             collapseSpeed: 10,
@@ -70,11 +138,23 @@ $(function () {
             socket.emit('join', name);
         });
 
+        // this monitor is used to refresh online users panel.
+        socket.on('online_users', function (users){
+            $('#online_users>div').find('p').remove();
+            users.forEach(function (user, index, self){
+                $('#online_users>div').append('<p>' + (index + 1) + '. ' + user + '</p>');
+            });
+        });
+
         socket.on('msg', function (msg) {
             $('#messages').append($('<li>').html(msg.replace(/\s/gi, '&nbsp;')));
             $('body').animate({
                 scrollTop: $('ul li:last').offset().top
             }, 0);
+            if (!windowActivated) {
+                badgeCount += 1;
+                favicon.badge(badgeCount);
+            }
         });
 
         var clearTimer = function (ids) {

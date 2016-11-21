@@ -21,8 +21,8 @@ io.on('connection', function (socket) {
         }
         rooms[roomId].push(userName);
         socket.join(roomId);
+        io.to(roomId).emit('online_users', rooms[roomId]);
         io.to(roomId).emit('msg', bold(userName) + ' just joins the room `' + roomId + '`');
-        console.log(rooms);
     });
 
     function bold (el){
@@ -58,11 +58,15 @@ io.on('connection', function (socket) {
         let index = rooms[roomId].indexOf(user);
         if (-1 !== index) {
             rooms[roomId].splice(index, 1);
+            // leaves room.
+            socket.leave(roomId);
+            io.to(roomId).emit('online_users', rooms[roomId]);
+            io.to(roomId).emit('msg', user + ' leaves room `' + roomId + '`.');
         }
-        // leaves room.
-        socket.leave(roomId);
-        io.to(roomId).emit('msg', user + ' leaves room `' + roomId + '`.');
-        console.log(rooms);
+        else {
+            // user already left, it's probably triggered by closing browser or redirect browser to another site.
+            // for this case, we discard it.
+        }
     });
 
     socket.on('input', function (inputVal){
