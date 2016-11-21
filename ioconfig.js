@@ -1,6 +1,6 @@
 'use strict';
 
-let io = require('socket.io')();
+const io = require('socket.io')();
 
 /**
   *  room variable to record all existed rooms.
@@ -9,9 +9,9 @@ let io = require('socket.io')();
 let rooms = {};
 
 io.on('connection', function (socket) {
-    var url = socket.request.headers.referer; // get url from client request.
+    let url = socket.request.headers.referer; // get url from client request.
     url = url.split('/');
-    var roomId = url[url.length - 1],
+    let roomId = decodeURI(url[url.length - 1]),
         user = '';
 
     socket.on('join', function (userName){
@@ -21,7 +21,8 @@ io.on('connection', function (socket) {
         }
         rooms[roomId].push(userName);
         socket.join(roomId);
-        io.to(roomId).emit('msg', bold(userName) + ' just joins the room ' + roomId);
+        io.to(roomId).emit('msg', bold(userName) + ' just joins the room `' + roomId + '`');
+        console.log(rooms);
     });
 
     function bold (el){
@@ -54,13 +55,14 @@ io.on('connection', function (socket) {
 
     // internal event
     socket.on('disconnect', function () {
-        var index = rooms[roomId].indexOf(user);
+        let index = rooms[roomId].indexOf(user);
         if (-1 !== index) {
             rooms[roomId].splice(index, 1);
         }
         // leaves room.
         socket.leave(roomId);
-        io.to(roomId).emit('msg', user + ' leaves room "' + roomId + '".');
+        io.to(roomId).emit('msg', user + ' leaves room `' + roomId + '`.');
+        console.log(rooms);
     });
 
     socket.on('input', function (inputVal){

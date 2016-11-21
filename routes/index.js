@@ -3,27 +3,7 @@ var router = express.Router();
 
 var rooms = [
   {
-    name: 'room1',
-    number: 0
-  },
-  {
-    name: 'room2',
-    number: 0
-  },
-  {
-    name: 'room3',
-    number: 0
-  },
-  {
-    name: 'room4',
-    number: 0
-  },
-  {
-    name: 'room5',
-    number: 0
-  },
-  {
-    name: 'room6',
+    name: 'chatting room',
     number: 0
   }
 ];
