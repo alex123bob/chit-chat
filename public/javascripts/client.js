@@ -8,6 +8,12 @@ $(function () {
         alert('we must input something.');
     }
     else {
+        $('#online_users').collapsible('accordion-open', {
+            contentOpen: 3,
+            collapseSpeed: 10,
+            accordionUpSpeed: 10,
+            accordionDownSpeed: 10
+        });
         // establish connection.
         var socket = io();
 
